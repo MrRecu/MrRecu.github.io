@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mateusz – Kompletna droga do programisty</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Cabinet+Grotesk:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f0e8;
+    --ink: #1a1a2e;
+    --done: #16a34a;
+    --done-bg: #f0fdf4;
+    --done-border: #86efac;
+    --active: #0369a1;
+    --active-bg: #eff6ff;
+    --active-border: #93c5fd;
+    --todo: #6b7280;
+    --todo-bg: #f9fafb;
+    --todo-border: #e5e7eb;
+    --accent: #dc2626;
+    --parallel: #7c3aed;
+    --parallel-bg: #faf5ff;
+    --parallel-border: #c4b5fd;
+    --warn: #b45309;
+    --warn-bg: #fffbeb;
+    --warn-border: #fcd34d;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Cabinet Grotesk', sans-serif;
+    min-height: 100vh;
+    padding: 3rem 1.5rem;
+    background-image:
+      radial-gradient(circle at 15% 15%, rgba(220,38,38,0.04) 0%, transparent 50%),
+      radial-gradient(circle at 85% 85%, rgba(3,105,161,0.04) 0%, transparent 50%);
+  }
+  .page { max-width: 960px; margin: 0 auto; }
+
+  .header { text-align: center; margin-bottom: 3rem; opacity: 0; animation: fadeUp 0.5s ease 0.1s forwards; }
+  .header-eyebrow { font-family: 'Space Mono', monospace; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; }
+  .header-title { font-size: clamp(2.2rem, 5vw, 4rem); font-weight: 900; line-height: 1; letter-spacing: -0.03em; margin-bottom: 0.75rem; }
+  .header-title span { color: var(--accent); }
+  .header-sub { font-size: 0.9rem; color: var(--todo); font-weight: 500; font-family: 'Space Mono', monospace; }
+
+  .progress-section { margin-bottom: 2rem; background: white; border: 2px solid #e5e7eb; border-radius: 12px; padding: 1.5rem 2rem; opacity: 0; animation: fadeUp 0.5s ease 0.15s forwards; }
+  .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+  .progress-title { font-family: 'Space Mono', monospace; font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--todo); }
+  .progress-pct { font-size: 1.5rem; font-weight: 900; color: var(--ink); }
+  .progress-bar-bg { height: 10px; background: #f3f4f6; border-radius: 999px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--done), var(--active)); width: 0%; animation: fillBar 1.5s cubic-bezier(0.16,1,0.3,1) 0.8s forwards; }
+  @keyframes fillBar { to { width: 28%; } }
+  .progress-steps { display: flex; justify-content: space-between; margin-top: 0.75rem; font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--todo); }
+
+  .legend { display: flex; gap: 1.2rem; justify-content: center; margin-bottom: 2rem; flex-wrap: wrap; opacity: 0; animation: fadeUp 0.5s ease 0.2s forwards; }
+  .legend-item { display: flex; align-items: center; gap: 0.5rem; font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 0.05em; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .legend-dot.done { background: var(--done); }
+  .legend-dot.active { background: var(--active); }
+  .legend-dot.todo { background: var(--todo); }
+  .legend-dot.parallel { background: var(--parallel); }
+  .legend-dot.warn { background: var(--warn); }
+
+  .parallel-banner { background: var(--parallel-bg); border: 2px solid var(--parallel-border); border-radius: 12px; padding: 1.5rem 2rem; margin-bottom: 1.5rem; opacity: 0; animation: fadeUp 0.5s ease 0.25s forwards; }
+  .parallel-banner-title { font-family: 'Space Mono', monospace; font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--parallel); margin-bottom: 1rem; }
+  .parallel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem; }
+  .parallel-item { background: white; border: 1px solid var(--parallel-border); border-radius: 8px; padding: 0.85rem 1rem; }
+  .parallel-item-title { font-weight: 800; font-size: 0.85rem; color: var(--parallel); margin-bottom: 0.3rem; }
+  .parallel-item-desc { font-size: 0.75rem; color: var(--todo); line-height: 1.4; font-weight: 500; }
+
+  .avoid-banner { background: var(--warn-bg); border: 2px solid var(--warn-border); border-radius: 12px; padding: 1.25rem 2rem; margin-bottom: 2.5rem; opacity: 0; animation: fadeUp 0.5s ease 0.3s forwards; }
+  .avoid-banner-title { font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--warn); margin-bottom: 0.75rem; }
+  .avoid-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .avoid-tag { background: white; border: 1px solid var(--warn-border); padding: 0.3rem 0.75rem; border-radius: 999px; font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--warn); }
+
+  .phases { display: flex; flex-direction: column; gap: 0; position: relative; }
+  .phases::before { content: ''; position: absolute; left: 28px; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, var(--done) 0%, var(--done) 36%, var(--active) 36%, var(--active) 46%, var(--todo) 46%, var(--todo) 100%); z-index: 0; }
+
+  .phase { display: grid; grid-template-columns: 60px 1fr; gap: 1.5rem; margin-bottom: 1.25rem; position: relative; z-index: 1; opacity: 0; transform: translateY(20px); animation: fadeUp 0.5s ease forwards; }
+  .phase:nth-child(1) { animation-delay: 0.35s; }
+  .phase:nth-child(2) { animation-delay: 0.42s; }
+  .phase:nth-child(3) { animation-delay: 0.49s; }
+  .phase:nth-child(4) { animation-delay: 0.56s; }
+  .phase:nth-child(5) { animation-delay: 0.63s; }
+  .phase:nth-child(6) { animation-delay: 0.70s; }
+  .phase:nth-child(7) { animation-delay: 0.77s; }
+  .phase:nth-child(8) { animation-delay: 0.84s; }
+  .phase:nth-child(9) { animation-delay: 0.91s; }
+  .phase:nth-child(10) { animation-delay: 0.98s; }
+  .phase:nth-child(11) { animation-delay: 1.05s; }
+  .phase:nth-child(12) { animation-delay: 1.12s; }
+
+  @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+  .node { display: flex; flex-direction: column; align-items: center; padding-top: 1.2rem; }
+  .node-circle { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; border: 3px solid; background: white; position: relative; z-index: 2; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s; flex-shrink: 0; }
+  .node-circle:hover { transform: scale(1.1); }
+  .phase.done .node-circle { border-color: var(--done); background: var(--done-bg); }
+  .phase.active .node-circle { border-color: var(--active); background: var(--active-bg); animation: pulse-blue 2s infinite; }
+  .phase.todo .node-circle { border-color: var(--todo-border); background: var(--todo-bg); }
+  @keyframes pulse-blue { 0%, 100% { box-shadow: 0 0 0 4px rgba(3,105,161,0.15); } 50% { box-shadow: 0 0 0 10px rgba(3,105,161,0.06); } }
+
+  .card { border: 2px solid; border-radius: 12px; padding: 1.25rem 1.5rem; transition: transform 0.2s, box-shadow 0.2s; }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+  .phase.done .card { border-color: var(--done-border); background: var(--done-bg); }
+  .phase.active .card { border-color: var(--active-border); background: var(--active-bg); }
+  .phase.todo .card { border-color: var(--todo-border); background: var(--todo-bg); }
+
+  .card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 0.6rem; flex-wrap: wrap; }
+  .card-title { font-size: 1.05rem; font-weight: 800; letter-spacing: -0.01em; line-height: 1.2; }
+  .phase.done .card-title { color: var(--done); }
+  .phase.active .card-title { color: var(--active); }
+  .phase.todo .card-title { color: var(--ink); }
+
+  .card-badge { font-family: 'Space Mono', monospace; font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.2rem 0.65rem; border-radius: 999px; white-space: nowrap; font-weight: 700; flex-shrink: 0; }
+  .phase.done .card-badge { background: var(--done); color: white; }
+  .phase.active .card-badge { background: var(--active); color: white; }
+  .phase.todo .card-badge { background: var(--todo-border); color: var(--todo); }
+
+  .card-desc { font-size: 0.85rem; color: #374151; line-height: 1.55; margin-bottom: 0.85rem; font-weight: 500; }
+  .card-items { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+  .card-item { font-family: 'Space Mono', monospace; font-size: 0.62rem; padding: 0.2rem 0.6rem; border-radius: 4px; letter-spacing: 0.03em; }
+  .phase.done .card-item { background: rgba(22,163,74,0.1); color: var(--done); border: 1px solid var(--done-border); }
+  .phase.active .card-item { background: rgba(3,105,161,0.1); color: var(--active); border: 1px solid var(--active-border); }
+  .phase.todo .card-item { background: white; color: var(--todo); border: 1px solid var(--todo-border); }
+  .card-time { font-family: 'Space Mono', monospace; font-size: 0.62rem; color: var(--todo); margin-top: 0.65rem; }
+
+  .section-divider { display: flex; align-items: center; gap: 1rem; margin: 1rem 0 1rem 76px; opacity: 0; animation: fadeUp 0.4s ease forwards; }
+  .section-divider-label { font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--todo); white-space: nowrap; }
+  .section-divider-line { flex: 1; height: 1px; background: var(--todo-border); }
+
+  .goal-box { margin-top: 2.5rem; border: 3px solid var(--ink); border-radius: 16px; padding: 2.5rem; background: var(--ink); color: white; text-align: center; position: relative; overflow: hidden; opacity: 0; animation: fadeUp 0.5s ease 1.2s forwards; }
+  .goal-box::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(255,255,255,0.015) 20px, rgba(255,255,255,0.015) 40px); }
+  .goal-emoji { font-size: 2.5rem; margin-bottom: 0.75rem; display: block; }
+  .goal-title { font-size: clamp(1.4rem, 2.5vw, 2.2rem); font-weight: 900; letter-spacing: -0.02em; margin-bottom: 0.75rem; position: relative; }
+  .goal-title span { color: #fbbf24; }
+  .goal-desc { font-size: 0.9rem; color: rgba(255,255,255,0.55); max-width: 520px; margin: 0 auto 2rem; line-height: 1.6; font-weight: 500; position: relative; }
+  .goal-stats { display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap; position: relative; }
+  .goal-stat-value { font-size: 1.8rem; font-weight: 900; color: #fbbf24; line-height: 1; margin-bottom: 0.25rem; }
+  .goal-stat-label { font-family: 'Space Mono', monospace; font-size: 0.62rem; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 0.1em; }
+
+  .jobs-section { margin-top: 2rem; opacity: 0; animation: fadeUp 0.5s ease 1.3s forwards; }
+  .jobs-title { font-family: 'Space Mono', monospace; font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--todo); margin-bottom: 1rem; }
+  .jobs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.75rem; }
+  .job-card { background: white; border: 2px solid #e5e7eb; border-radius: 10px; padding: 1.1rem 1.25rem; transition: border-color 0.2s, transform 0.2s; }
+  .job-card:hover { border-color: var(--active); transform: translateY(-2px); }
+  .job-company { font-size: 0.68rem; color: var(--todo); font-family: 'Space Mono', monospace; margin-bottom: 0.3rem; }
+  .job-title { font-size: 0.95rem; font-weight: 800; color: var(--ink); margin-bottom: 0.5rem; }
+  .job-salary { font-size: 0.8rem; color: var(--done); font-weight: 700; font-family: 'Space Mono', monospace; }
+  .job-match { display: inline-block; margin-top: 0.5rem; font-family: 'Space Mono', monospace; font-size: 0.6rem; padding: 0.2rem 0.6rem; border-radius: 999px; background: var(--active-bg); color: var(--active); border: 1px solid var(--active-border); }
+
+  /* ── PLAN A/B section ── */
+  .plans-section { margin: 2rem 0; opacity: 0; animation: fadeUp 0.5s ease 0.65s forwards; }
+  .plans-header { text-align: center; margin-bottom: 1.5rem; }
+  .plans-header-eyebrow { font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--todo); margin-bottom: 0.5rem; }
+  .plans-header-title { font-size: 1.4rem; font-weight: 900; letter-spacing: -0.02em; }
+
+  .plans-decision { background: #fffbeb; border: 2px solid #fcd34d; border-radius: 10px; padding: 0.9rem 1.4rem; margin-bottom: 1.5rem; text-align: center; font-family: 'Space Mono', monospace; font-size: 0.68rem; color: #b45309; letter-spacing: 0.05em; }
+
+  .plans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+
+  .plan-col { border: 2px solid; border-radius: 14px; overflow: hidden; }
+  .plan-col.plan-a { border-color: #86efac; }
+  .plan-col.plan-b { border-color: #93c5fd; }
+
+  .plan-col-header { padding: 1rem 1.25rem; display: flex; align-items: center; gap: 0.75rem; }
+  .plan-col.plan-a .plan-col-header { background: #f0fdf4; }
+  .plan-col.plan-b .plan-col-header { background: #eff6ff; }
+
+  .plan-col-icon { font-size: 1.4rem; }
+  .plan-col-label { font-family: 'Space Mono', monospace; font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.15rem; }
+  .plan-col.plan-a .plan-col-label { color: var(--done); }
+  .plan-col.plan-b .plan-col-label { color: var(--active); }
+  .plan-col-name { font-size: 0.95rem; font-weight: 900; letter-spacing: -0.01em; }
+  .plan-col.plan-a .plan-col-name { color: var(--done); }
+  .plan-col.plan-b .plan-col-name { color: var(--active); }
+  .plan-col-sub { font-family: 'Space Mono', monospace; font-size: 0.58rem; color: var(--todo); margin-top: 0.1rem; }
+
+  .plan-items { padding: 1rem 1.25rem; display: flex; flex-direction: column; gap: 0.6rem; background: white; }
+
+  .plan-item { border-radius: 8px; padding: 0.75rem 1rem; border: 1px solid; }
+  .plan-col.plan-a .plan-item { border-color: #d1fae5; background: #f9fffe; }
+  .plan-col.plan-b .plan-item { border-color: #bfdbfe; background: #f8fbff; }
+
+  .plan-item-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.3rem; }
+  .plan-item-title { font-size: 0.85rem; font-weight: 800; color: var(--ink); line-height: 1.2; }
+  .plan-item-date { font-family: 'Space Mono', monospace; font-size: 0.58rem; white-space: nowrap; padding: 0.15rem 0.5rem; border-radius: 999px; font-weight: 700; flex-shrink: 0; }
+  .plan-col.plan-a .plan-item-date { background: var(--done); color: white; }
+  .plan-col.plan-b .plan-item-date { background: var(--active); color: white; }
+
+  .plan-item-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.4rem; }
+  .plan-item-tag { font-family: 'Space Mono', monospace; font-size: 0.55rem; padding: 0.15rem 0.45rem; border-radius: 3px; }
+  .plan-col.plan-a .plan-item-tag { background: rgba(22,163,74,0.1); color: var(--done); border: 1px solid #d1fae5; }
+  .plan-col.plan-b .plan-item-tag { background: rgba(3,105,161,0.08); color: var(--active); border: 1px solid #bfdbfe; }
+
+  .plan-item-note { font-size: 0.72rem; color: #6b7280; margin-top: 0.3rem; line-height: 1.4; font-weight: 500; }
+
+  .plan-col-footer { padding: 0.85rem 1.25rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+  .plan-col.plan-a .plan-col-footer { background: #f0fdf4; border-top: 1px solid #d1fae5; }
+  .plan-col.plan-b .plan-col-footer { background: #eff6ff; border-top: 1px solid #bfdbfe; }
+  .plan-col-footer-label { font-family: 'Space Mono', monospace; font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.1em; }
+  .plan-col.plan-a .plan-col-footer-label { color: var(--done); }
+  .plan-col.plan-b .plan-col-footer-label { color: var(--active); }
+  .plan-col-footer-value { font-size: 0.9rem; font-weight: 900; }
+  .plan-col.plan-a .plan-col-footer-value { color: var(--done); }
+  .plan-col.plan-b .plan-col-footer-value { color: var(--active); }
+
+  @media (max-width: 700px) {
+    .plans-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 600px) {
+    .phases::before { left: 22px; }
+    .phase { grid-template-columns: 48px 1fr; gap: 1rem; }
+    .node-circle { width: 44px; height: 44px; font-size: 1.1rem; }
+    .section-divider { margin-left: 60px; }
+    .goal-stats { gap: 1.5rem; }
+    .parallel-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="header-eyebrow">// Mateusz Miszuta · 2025–2026</div>
+    <h1 class="header-title">Kompletna droga do<br><span>Python Developer</span></h1>
+    <p class="header-sub">od specjalisty bankowego → do programisty · Kraków / Remote</p>
+  </div>
+
+  <div class="progress-section">
+    <div class="progress-header">
+      <span class="progress-title">Ogólny postęp</span>
+      <span class="progress-pct">28%</span>
+    </div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill"></div></div>
+    <div class="progress-steps">
+      <span>START</span><span>Fundamenty ✓</span><span>Python 🔥</span><span>DevOps</span><span>Portfolio</span><span>🎯 PRACA</span>
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot done"></div><span>UKOŃCZONE</span></div>
+    <div class="legend-item"><div class="legend-dot active"></div><span>W TRAKCIE</span></div>
+    <div class="legend-item"><div class="legend-dot todo"></div><span>NASTĘPNE</span></div>
+    <div class="legend-item"><div class="legend-dot parallel"></div><span>RÓWNOLEGLE CAŁY CZAS</span></div>
+    <div class="legend-item"><div class="legend-dot warn"></div><span>UNIKAĆ TERAZ</span></div>
+  </div>
+
+  <div class="parallel-banner">
+    <div class="parallel-banner-title">🔄 Równolegle przez cały czas nauki</div>
+    <div class="parallel-grid">
+      <div class="parallel-item">
+        <div class="parallel-item-title">🇬🇧 Angielski techniczny</div>
+        <div class="parallel-item-desc">Czytaj dokumentację po angielsku. Bez B2 tech trudno o pracę. Priorytet #1.</div>
+      </div>
+      <div class="parallel-item">
+        <div class="parallel-item-title">🧩 Algorytmy (1/dzień)</div>
+        <div class="parallel-item-desc">HackerRank / LeetCode – 1 zadanie Easy dziennie. Rozmowy tech tego wymagają.</div>
+      </div>
+      <div class="parallel-item">
+        <div class="parallel-item-title">🐙 GitHub aktywność</div>
+        <div class="parallel-item-desc">Regularny zielony wykres commitów. Rekruterzy patrzą na aktywność profilu.</div>
+      </div>
+      <div class="parallel-item">
+        <div class="parallel-item-title">💼 LinkedIn profil</div>
+        <div class="parallel-item-desc">Uzupełnij profil, dodawaj kursy i projekty. Rekruterzy sami piszą.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="avoid-banner">
+    <div class="avoid-banner-title">⛔ Czego NIE robić na tym etapie – rozprasza i opóźnia cel</div>
+    <div class="avoid-tags">
+      <span class="avoid-tag">❌ PyTorch / ML / AI</span>
+      <span class="avoid-tag">❌ React / Vue / Frontend</span>
+      <span class="avoid-tag">❌ Java / Go / Rust</span>
+      <span class="avoid-tag">❌ Nowe kursy przed ukończeniem obecnych</span>
+      <span class="avoid-tag">❌ Kubernetes przed Dockerem</span>
+    </div>
+  </div>
+
+  <div class="phases">
+
+    <div class="phase done">
+      <div class="node"><div class="node-circle">🎓</div></div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Solidny fundament IT</div><div class="card-badge">✓ Ukończone</div></div>
+        <p class="card-desc">Technikum informatyczne + studia inżynierskie IT. Praktyczne doświadczenie od 2018 roku – serwis, administracja, wojsko, bankowość.</p>
+        <div class="card-items">
+          <span class="card-item">Technik Informatyk</span><span class="card-item">Inżynier IT</span><span class="card-item">Active Directory</span><span class="card-item">Cisco</span><span class="card-item">SQL</span><span class="card-item">Poświadczenie POUFNE</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase done">
+      <div class="node"><div class="node-circle">🐍</div></div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Pierwsza praca jako developer</div><div class="card-badge">✓ Ukończone</div></div>
+        <p class="card-desc">10 miesięcy jako Junior Python Developer – Grosner Development. Backend, Odoo ERP, integracje z Allegro / Amazon / eBay.</p>
+        <div class="card-items">
+          <span class="card-item">Python</span><span class="card-item">Django → Odoo</span><span class="card-item">REST API</span><span class="card-item">XML / JSON</span><span class="card-item">PostgreSQL</span><span class="card-item">Postman</span><span class="card-item">Git</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase done">
+      <div class="node"><div class="node-circle">🌿</div></div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Git od podstaw + GitHub portfolio live</div><div class="card-badge">✓ Ukończone</div></div>
+        <p class="card-desc">Pełny kurs Kamila Brzezińskiego. Gałęzie, rebase, konflikty, code review. Strona mrrecu.github.io już działa.</p>
+        <div class="card-items">
+          <span class="card-item">Branches & Merge</span><span class="card-item">Rebase</span><span class="card-item">Code Review</span><span class="card-item">GitHub Pages</span><span class="card-item">Markdown README</span><span class="card-item">mrrecu.github.io ✓</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-divider" style="animation-delay:0.55s">
+      <span class="section-divider-label">🔥 Aktualnie</span>
+      <div class="section-divider-line"></div>
+    </div>
+
+    <div class="phase active">
+      <div class="node"><div class="node-circle">🔥</div></div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Python od podstaw – TERAZ</div><div class="card-badge">▶ W trakcie</div></div>
+        <p class="card-desc">Kurs Kamila Brzezińskiego – 264 lekcje, 27h. Solidne podstawy przed Django i DevOps. W pakiecie bonus: SOLID w Pythonie.</p>
+        <div class="card-items">
+          <span class="card-item">OOP</span><span class="card-item">Wyjątki & pliki</span><span class="card-item">Biblioteka std</span><span class="card-item">REST API</span><span class="card-item">Bazy danych</span><span class="card-item">Projekty portfolio</span><span class="card-item">SOLID w Pythonie 🎁</span>
+        </div>
+        <div class="card-time">⏱ 2–3 miesiące · 15–30 min dziennie</div>
+      </div>
+    </div>
+
+    <div class="section-divider" style="animation-delay:0.65s">
+      <span class="section-divider-label">📋 Następne kroki – w tej kolejności</span>
+      <div class="section-divider-line"></div>
+    </div>
+
+  </div><!-- end .phases -->
+
+  <!-- PLAN A / PLAN B -->
+  <div class="plans-section">
+    <div class="plans-header">
+      <div class="plans-header-eyebrow">// Decyzja 27 marca</div>
+      <div class="plans-header-title">Plan A vs Plan B – dwie ścieżki</div>
+    </div>
+    <div class="plans-decision">⏳ 27 marca dowiesz się czy L4 zostaje przedłużone – wtedy wybierasz kolumnę</div>
+
+    <div class="plans-grid">
+
+      <!-- PLAN A -->
+      <div class="plan-col plan-a">
+        <div class="plan-col-header">
+          <div class="plan-col-icon">🏢</div>
+          <div>
+            <div class="plan-col-label">Plan A</div>
+            <div class="plan-col-name">Wracasz do pracy 27.03</div>
+            <div class="plan-col-sub">~2h dziennie po pracy · cel: październik 2026</div>
+          </div>
+        </div>
+        <div class="plan-items">
+
+          <div class="plan-item">
+            <div class="plan-item-top">
+              <div class="plan-item-title">🧪 pytest + testy jednostkowe</div>
+              <div class="plan-item-date">kwiecień</div>
+            </div>
+            <div class="plan-item-note">3–4h materiału. Największy różnicujący skill na rozmowach.</div>
+            <div class="plan-item-tags"><span class="plan-item-tag">pytest</span><span class="plan-item-tag">unit tests</span><span class="plan-item-tag">mock</span></div>
+          </div>
+
+          <div class="plan-item">
+            <div class="plan-item-top">
+              <div class="plan-item-title">⚡ Django odświeżenie + FastAPI</div>
+              <div class="plan-item-date">maj–czerwiec</div>
+            </div>
+            <div class="plan-item-note">Oficjalny Django Tutorial + projekt. FastAPI jako nowy skill.</div>
+            <div class="plan-item-tags"><span class="plan-item-tag">Django ORM</span><span class="plan-item-tag">DRF</span><span class="plan-item-tag">FastAPI</span><span class="plan-item-tag">JWT</span></div>
+          </div>
+
+          <div class="plan-item">
+            <div class="plan-item-top">
+              <div class="plan-item-title">🗃️ SQL zaawansowany</div>
+              <div class="plan-item-date">lipiec</div>
+            </div>
+            <div class="plan-item-note">sqltutorial.org – JOINy, indeksy, optymalizacja zapytań.</div>
+            <div class="plan-item-tags"><span class="plan-item-tag">JOIN</span><span class="plan-item-tag">Subquery</span><span class="plan-item-tag">Indeksy</span></div>
+          </div>
+
+          <div class="plan-item">
+            <div class="plan-item-top">
+              <div class="plan-item-title">🐳 Docker od podstaw</div>
+              <div class="plan-item-date">sierpień–wrzesień</div>
+            </div>
+            <div class="plan-item-note">Kurs zakupiony. Absolutny standard w 2026.</div>
+            <div class="plan-item-tags"><span class="plan-item-tag">Dockerfile</span><span class="plan-item-tag">Compose</span><span class="plan-item-tag">Registry</span></div>
+          </div>
+
+          <div class="plan-item">
+            <div class="plan-item-top">
+              <div class="plan-item-title">☁️ Azure DevOps + ☸️ Kubernetes</div>
+              <div class="plan-item-date">wrzesień–październik</div>
+            </div>
+            <div class="plan-item-note">Dwa kursy zakupione. Fintech + Azure = unikalna kombinacja.</div>
+            <div class="plan-item-tags"><span class="plan-item-tag">CI/CD</span><span class="plan-item-tag">Pipelines</span><span class="plan-item-tag">K8s Pods</span></div>
+          </div>
+
+          <div class="plan-item">
+            <div class="plan-item-top">
+              <div class="plan-item-title">💼 Rekrutacja + aplikowanie</div>
+              <div class="plan-item-date">październik–listopad</div>
+            </div>
+            <div class="plan-item-note">Kurs Rekrutacja Programisty + JustJoin.it + LinkedIn.</div>
+            <div class="plan-item-tags"><span class="plan-item-tag">CV tech</span><span class="plan-item-tag">Portfolio</span><span class="plan-item-tag">Mock interview</span></div>
+          </div>
+
+        </div>
+        <div class="plan-col-footer">
+          <div class="plan-col-footer-label">Cel: nowa praca</div>
+          <div class="plan-col-footer-value">październik / listopad 2026</div>
+        </div>
+      </div>
+
+      <!-- PLAN B -->
+      <div class="plan-col plan-b">
+        <div class="plan-col-header">
+          <div class="plan-col-icon">🚀</div>
+          <div>
+            <div class="plan-col-label">Plan B</div>
+            <div class="plan-col-name">L4 przedłużone do ~27.04</div>
+            <div class="plan-col-sub">6–8h dziennie · cel: czerwiec–lipiec 2026</div>
+          </div>
+        </div>
+        <div class="plan-items">
+
+          <div class="plan-item">
+            <div class="plan-item-top">
+              <div class="plan-item-title">🧪 pytest + testy jednostkowe</div>
+              <div class="plan-item-date">27–30 marca</div>
+            </div>
+            <div class="plan-item-note">3 dni przy intensywnym tempie. Gotowe przed końcem marca.</div>
+            <div class="plan-item-tags"><span class="plan-item-tag">pytest</span><span class="plan-item-tag">unit tests</span><span class="plan-item-tag">mock</span></div>
+          </div>
+
+          <div class="plan-item">
+            <div class="plan-item-top">
+              <div class="plan-item-title">⚡ Django od nowa + FastAPI</div>
+              <div class="plan-item-date">31.03 – 10.04</div>
+            </div>
+            <div class="plan-item-note">Oficjalny Django Tutorial – bez stresu, pamięć mięśniowa wraca szybko. Następnie FastAPI.</div>
+            <div class="plan-item-tags"><span class="plan-item-tag">Django ORM</span><span class="plan-item-tag">DRF</span><span class="plan-item-tag">FastAPI</span><span class="plan-item-tag">Swagger</span></div>
+          </div>
+
+          <div class="plan-item">
+            <div class="plan-item-top">
+              <div class="plan-item-title">🗃️ SQL zaawansowany</div>
+              <div class="plan-item-date">11–15 kwietnia</div>
+            </div>
+            <div class="plan-item-note">5 dni intensywnej praktyki. sqltutorial.org + Mode Analytics.</div>
+            <div class="plan-item-tags"><span class="plan-item-tag">JOIN</span><span class="plan-item-tag">Subquery</span><span class="plan-item-tag">Indeksy</span><span class="plan-item-tag">Widoki</span></div>
+          </div>
+
+          <div class="plan-item">
+            <div class="plan-item-top">
+              <div class="plan-item-title">🐳 Docker od podstaw</div>
+              <div class="plan-item-date">16–25 kwietnia</div>
+            </div>
+            <div class="plan-item-note">10 dni przy 6–8h = pełny kurs. Ogromny wzrost atrakcyjności CV.</div>
+            <div class="plan-item-tags"><span class="plan-item-tag">Dockerfile</span><span class="plan-item-tag">Compose</span><span class="plan-item-tag">Volumes</span><span class="plan-item-tag">Networks</span></div>
+          </div>
+
+          <div class="plan-item">
+            <div class="plan-item-top">
+              <div class="plan-item-title">💼 Start Rekrutacji programisty</div>
+              <div class="plan-item-date">26–27 kwietnia</div>
+            </div>
+            <div class="plan-item-note">Pierwsze lekcje kursu rekrutacyjnego + aktualizacja CV i portfolio.</div>
+            <div class="plan-item-tags"><span class="plan-item-tag">CV tech</span><span class="plan-item-tag">LinkedIn</span><span class="plan-item-tag">Portfolio</span></div>
+          </div>
+
+          <div class="plan-item">
+            <div class="plan-item-top">
+              <div class="plan-item-title">☁️ Azure + ☸️ K8s + aplikowanie</div>
+              <div class="plan-item-date">maj–lipiec</div>
+            </div>
+            <div class="plan-item-note">Po powrocie do pracy 2h/dzień – finalizacja DevOps i aktywna rekrutacja równolegle.</div>
+            <div class="plan-item-tags"><span class="plan-item-tag">Azure CI/CD</span><span class="plan-item-tag">K8s</span><span class="plan-item-tag">JustJoin.it</span></div>
+          </div>
+
+        </div>
+        <div class="plan-col-footer">
+          <div class="plan-col-footer-label">Cel: nowa praca</div>
+          <div class="plan-col-footer-value">czerwiec / lipiec 2026</div>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- end .plans-section -->
+
+  <div class="phases">
+
+
+    <div class="section-divider" style="animation-delay:1.05s">
+      <span class="section-divider-label">🎯 Finał</span>
+      <div class="section-divider-line"></div>
+    </div>
+
+    <div class="phase todo">
+      <div class="node"><div class="node-circle">💼</div></div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Rekrutacja Programisty + aktywne aplikowanie</div><div class="card-badge">CEL</div></div>
+        <p class="card-desc">Masz kurs rekrutacyjny w pakiecie. Przygotuj CV tech, uzupełnij portfolio o projekty i zacznij aplikować na JustJoin.it.</p>
+        <div class="card-items">
+          <span class="card-item">CV techniczne</span><span class="card-item">3+ projekty w portfolio</span><span class="card-item">LeetCode / HackerRank</span><span class="card-item">LinkedIn aktywny</span><span class="card-item">JustJoin.it</span><span class="card-item">Odoo / Django oferty</span><span class="card-item">Mock interview</span>
+        </div>
+        <div class="card-time">⏱ 1 miesiąc intensywnych przygotowań</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="jobs-section">
+    <div class="jobs-title">// Przykładowe oferty na Ciebie – JustJoin.it Kraków / Remote</div>
+    <div class="jobs-grid">
+      <div class="job-card">
+        <div class="job-company">RYNEK · TYP GROSNER</div>
+        <div class="job-title">Junior Python / Odoo Developer</div>
+        <div class="job-salary">5 000 – 8 000 PLN</div>
+        <span class="job-match">✓ Masz doświadczenie Odoo</span>
+      </div>
+      <div class="job-card">
+        <div class="job-company">EXA22 · KRAKÓW</div>
+        <div class="job-title">Full Stack Python Developer</div>
+        <div class="job-salary">7 000 – 9 500 PLN UoP</div>
+        <span class="job-match">✓ Cel za 6–9 miesięcy</span>
+      </div>
+      <div class="job-card">
+        <div class="job-company">COMARCH · KRAKÓW HYBRID</div>
+        <div class="job-title">Python / Django Developer</div>
+        <div class="job-salary">7 000 – 11 000 PLN</div>
+        <span class="job-match">✓ Django + stabilna korporacja</span>
+      </div>
+      <div class="job-card">
+        <div class="job-company">XCEEDANCE · KRAKÓW</div>
+        <div class="job-title">Integration Engineer (FastAPI)</div>
+        <div class="job-salary">8 000 – 12 000 PLN</div>
+        <span class="job-match">✓ Masz PostgreSQL + Postman</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="goal-box">
+    <span class="goal-emoji">🎯</span>
+    <h2 class="goal-title">Cel: <span>Python / Backend Developer</span><br>w sektorze fintech / bankowym</h2>
+    <p class="goal-desc">Twoja unikalna przewaga: doświadczenie bankowe + Python + DevOps. Żaden typowy junior tego nie ma. Wykorzystaj to na rozmowach.</p>
+    <div class="goal-stats">
+      <div><div class="goal-stat-value">6–12</div><div class="goal-stat-label">Miesięcy do celu</div></div>
+      <div><div class="goal-stat-value">7–10k</div><div class="goal-stat-label">PLN docelowo</div></div>
+      <div><div class="goal-stat-value">8+</div><div class="goal-stat-label">Kursów w planie</div></div>
+      <div><div class="goal-stat-value">118</div><div class="goal-stat-label">Ofert Python Kraków</div></div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

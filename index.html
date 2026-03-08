@@ -723,6 +723,8 @@
         <span class="skill-tag">XML</span>
         <span class="skill-tag">JSON</span>
         <span class="skill-tag">HTML5</span>
+        <span class="skill-tag">Jinja2</span>
+        <span class="skill-tag">PHP</span>
       </div>
     </div>
     <div class="skill-category">
@@ -855,11 +857,11 @@
 
   <div class="certs-grid">
     <div class="cert-card">
-      <div class="cert-icon">🐍</div>
+      <div class="cert-icon"><img src="https://cdn.iconscout.com/icon/free/png-256/free-python-logo-icon-svg-download-png-2945099.png?f=webp" alt="Python" style="width:28px;height:28px;object-fit:contain;"></div>
       <div>
         <div class="cert-name">Python od podstaw</div>
         <div class="cert-org">Kamil Brzeziński – Programuj od Podstaw</div>
-        <div class="cert-year">2023</div>
+        <div class="cert-year">2025</div>
       </div>
     </div>
     <div class="cert-card">
@@ -867,7 +869,7 @@
       <div>
         <div class="cert-name">Docker od podstaw</div>
         <div class="cert-org">Kamil Brzeziński – Programuj od Podstaw</div>
-        <div class="cert-year">2026</div>
+        <div class="cert-year">2025</div>
       </div>
     </div>
     <div class="cert-card">
@@ -875,7 +877,7 @@
       <div>
         <div class="cert-name">Kubernetes od podstaw</div>
         <div class="cert-org">Kamil Brzeziński – Programuj od Podstaw</div>
-        <div class="cert-year">2026</div>
+        <div class="cert-year">2025</div>
       </div>
     </div>
     <div class="cert-card">
@@ -883,7 +885,7 @@
       <div>
         <div class="cert-name">Azure DevOps</div>
         <div class="cert-org">Kamil Brzeziński – Programuj od Podstaw</div>
-        <div class="cert-year">2026</div>
+        <div class="cert-year">2025</div>
       </div>
     </div>
     <div class="cert-card">
@@ -903,7 +905,7 @@
       </div>
     </div>
     <div class="cert-card">
-      <div class="cert-icon">🌿</div>
+      <div class="cert-icon"><img src="https://git-scm.com/images/logos/downloads/Git-Icon-1788C.png" alt="Git" style="width:28px;height:28px;object-fit:contain;"></div>
       <div>
         <div class="cert-name">Git od podstaw</div>
         <div class="cert-org">Kamil Brzeziński – Programuj od Podstaw</div>
@@ -919,7 +921,7 @@
       </div>
     </div>
     <div class="cert-card">
-      <div class="cert-icon">🌐</div>
+      <div class="cert-icon"><img src="https://www.citypng.com/public/uploads/preview/cisco-square-blue-logo-icon-png-735811696612218gzoiadfplh.png" alt="Cisco" style="width:28px;height:28px;object-fit:contain;"></div>
       <div>
         <div class="cert-name">Cisco IT Essentials</div>
         <div class="cert-org">Cisco Networking Academy</div>
@@ -943,16 +945,16 @@
       </h2>
     </div>
     <div class="contact-links">
-      <a href="/cdn-cgi/l/email-protection#246945504151575e0a494d575e515045644349454d480a474b49" class="contact-link">
+      <a href="mailto:Mateusz.miszuta@gmail.com" class="contact-link">
         <div class="contact-link-icon">📧</div>
         <div class="contact-link-text">
           <div class="contact-link-label">Email</div>
-          <div class="contact-link-value"><span class="__cf_email__" data-cfemail="672a06130212141d490a0e141d12130627000a060e0b4904080a">[email&#160;protected]</span></div>
+          <div class="contact-link-value">Mateusz.miszuta@gmail.com</div>
         </div>
         <span style="color:var(--muted); font-size:0.8rem;">→</span>
       </a>
       <a href="https://github.com/MrRecu" target="_blank" class="contact-link">
-        <div class="contact-link-icon">🐙</div>
+        <div class="contact-link-icon"><img src="https://img.icons8.com/ios11/512/FFFFFF/github.png" alt="GitHub" style="width:28px;height:28px;object-fit:contain;"></div>
         <div class="contact-link-text">
           <div class="contact-link-label">GitHub</div>
           <div class="contact-link-value">github.com/MrRecu</div>
@@ -972,11 +974,11 @@
 </section>
 
 <footer>
-  <p>© 2026 <span>Mateusz Miszuta</span></p>
+  <p>© 2025 <span>Mateusz Miszuta</span></p>
   <p>Kraków, Polska · Otwarty na oferty</p>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
   // Custom cursor
   const cursor = document.getElementById('cursor');
   const ring = document.getElementById('cursorRing');
@@ -1023,4 +1025,13 @@
   });
 
   // Staggered cert cards
-  document.quer
+  document.querySelectorAll('.cert-card').forEach((card, i) => {
+    card.style.transitionDelay = `${i * 0.06}s`;
+  });
+
+  document.querySelectorAll('.timeline-item').forEach((item, i) => {
+    item.style.transitionDelay = `${i * 0.1}s`;
+  });
+</script>
+</body>
+</html>
